@@ -1,0 +1,8 @@
+LICENSE
+pyproject.toml
+discommands/__init__.py
+discord_commands.egg-info/PKG-INFO
+discord_commands.egg-info/SOURCES.txt
+discord_commands.egg-info/dependency_links.txt
+discord_commands.egg-info/requires.txt
+discord_commands.egg-info/top_level.txt
