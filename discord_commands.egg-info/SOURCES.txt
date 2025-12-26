@@ -5,6 +5,7 @@ discommands/__init__.py
 discommands/manager.py
 discommands/commands/__init__.py
 discommands/commands/reply.py
+discommands/commands/thread.py
 discord_commands.egg-info/PKG-INFO
 discord_commands.egg-info/SOURCES.txt
 discord_commands.egg-info/dependency_links.txt
