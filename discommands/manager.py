@@ -1,6 +1,6 @@
-from .commands import ReplyCommand
+from .commands import ReplyCommand, ThreadCommand
 from collections.abc import Coroutine
-from discord import Message, MessageType
+from discord import Message, MessageType, Thread
 from discord.ext.commands import Bot
 from typing import Optional, Self
 
@@ -11,7 +11,9 @@ class CommandManager:
     bot.discommands: Self = self
     self.__bot: Bot = bot
     self.__bot.add_listener(self.__reply_command_listener, "on_message")
+    self.__bot.add_listener(self.__thread_command_listener, "on_thread_create")
     self.__reply_commands_map: dict[str, ReplyCommand] = dict()
+    self.__thread_commands_map: dict[str, ThreadCommand] = dict()
 
 
   async def __reply_command_listener(self: Self, message: Message) -> None:
@@ -25,10 +27,25 @@ class CommandManager:
     await command(message)
 
 
+  async def __thread_command_listener(self: Self, thread: Thread) -> None:
+    if not thread.name.startswith(self.__bot.command_prefix): return
+    command_name: str = thread.name[1:]
+    command: Optional[ThreadCommand] = self.__thread_commands_map.get(command_name)
+    if not command: return
+    await command(thread)
+
+
   def add_reply_command(self: Self, command: ReplyCommand) -> ReplyCommand:
     if not isinstance(command, ReplyCommand): raise TypeError(f"command: Must be an instance of {ReplyCommand.__name__}; not {command.__class__.__name__}")
     if command.name in self.__reply_commands_map: raise ValueError(f"command: ReplyCommand {command.name!r} is already added to the command manager")
     self.__reply_commands_map[command.name]: ReplyCommand = command
+    return command
+
+
+  def add_thread_command(self: Self, command: ThreadCommand) -> ThreadCommand:
+    if not isinstance(command, ThreadCommand): raise TypeError(f"command: Must be an instance of {ThreadCommand.__name__}; not {command.__class__.__name__}")
+    if command.name in self.__thread_commands_map: raise ValueError(f"command: ThreadCommand {command.name!r} is already added to the command manager")
+    self.__thread_commands_map[command.name]: ThreadCommand = command
     return command
 
 
@@ -42,4 +59,12 @@ class CommandManager:
       command_name: str = (name or function.__name__).strip()
       command: ReplyCommand = ReplyCommand(name = command_name, callback = function)
       return self.add_reply_command(command)
+    return wrapper
+
+
+  def thread(self: Self, *, name: Optional[str] = None) -> ThreadCommand:
+    def wrapper(function: Coroutine) -> ThreadCommand:
+      command_name: str = (name or function.__name__).strip()
+      command: ThreadCommand = ThreadCommand(name = command_name, callback = function)
+      return self.add_thread_command(command)
     return wrapper
