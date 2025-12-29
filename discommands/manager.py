@@ -76,12 +76,8 @@ class CommandManager:
   def add_autocomplete_command(self: Self, command: AutocompleteCommand) -> AutocompleteCommand:
     if not isinstance(command, AutocompleteCommand): raise TypeError(f"command: Must be an instance of {AutocompleteCommand.__name__}; not {command.__class__.__name__}")
     if command.name in self.__autocomplete_commands_map: raise ValueError(f"command: AutocompleteCommand {command.name!r} is already added to the command manager")
-    if not self.__autocomplete_commands_map:
-      print("Adding autocomplete command slash command...")
-      self.__bot.tree.add_command(self.__slash_autocomplete_command)
-    print("Adding autocomplete command to map...")
+    if not self.__autocomplete_commands_map: self.__bot.tree.add_command(self.__slash_autocomplete_command)
     self.__autocomplete_commands_map[command.name]: AutocompleteCommand = command
-    print(f"{self.__autocomplete_commands_map = }")
     return command
 
 
