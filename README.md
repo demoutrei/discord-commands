@@ -1,5 +1,15 @@
 ## Command Types
 
+### AutocompleteCommand
+```py
+# Triggers when the /autocomplete slash command's "name"
+#   slash option matches the AutocompleteCommand's name
+
+@bot.discommands.autocomplete()
+async def ping(interaction: Interaction) -> None:
+  await interaction.response.send_message("Pong!")
+```
+
 ### ReplyCommand
 ```py
 # Triggers when a reply message matches a ReplyCommand
